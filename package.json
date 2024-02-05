@@ -1,0 +1,34 @@
+{
+  "name": "pockets-backend",
+  "version": "1.0.0",
+  "description": "This is an API built for Pockets.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JackTubby/Pockets-Backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JackTubby/Pockets-Backend/issues"
+  },
+  "homepage": "https://github.com/JackTubby/Pockets-Backend#readme",
+  "dependencies": {
+    "@prisma/client": "^5.9.1",
+    "@types/node": "^20.11.16",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "prisma": "^5.9.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
