@@ -9,3 +9,78 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id           String         @id @default(uuid())
+  createdAt    DateTime       @default(now())
+  username     String
+  firstname    String
+  lastname     String
+  email        String         @unique
+  password     String
+  Bank_Account Bank_Account[]
+  Pocket       Pocket[]
+}
+
+enum BANK_NAMES {
+  NATWEST
+  NATIONWIDE
+  HALIFAX
+  HSBC
+  SANTANDER
+  MONZO
+}
+
+model Bank_Account {
+  id        String     @id @default(uuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime
+  bankName  BANK_NAMES
+  balance   Decimal
+  digits    Int
+  name      String
+  color     String
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+}
+
+model Pocket {
+  id                 String              @id @default(uuid())
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime
+  balance            Decimal
+  name               String
+  color              String
+  icon               String
+  pocketTransactions PocketTransaction[]
+  userId             String
+  user               User                @relation(fields: [userId], references: [id])
+  target             target[]
+}
+
+model PocketTransaction {
+  id              String   @id @default(uuid())
+  date            DateTime @default(now())
+  previousBalance Decimal
+  balanceAfter    Decimal
+  isDeposit       Boolean
+  pocketId        String
+  pocket          Pocket   @relation(fields: [pocketId], references: [id])
+}
+
+model target {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  target     Int
+  targetDate DateTime
+  current    Int
+  pocketId   String
+  pocket     Pocket   @relation(fields: [pocketId], references: [id])
+}
+
+
+// pockets/accounts limits
+// total balance field in user table
+// ask g if where we work out the total balance or check that the pocket does not excceed goes in the route steps..
+// have another think through the db logic - even more so on the pockets
