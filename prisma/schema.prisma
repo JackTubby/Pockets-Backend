@@ -13,11 +13,12 @@ datasource db {
 model User {
   id           String         @id @default(uuid())
   createdAt    DateTime       @default(now())
-  username     String
-  firstname    String
-  lastname     String
+  username     String  @db.VarChar(30)
+  firstName    String         @db.VarChar(30)
+  lastName     String @db.VarChar(30)
   email        String         @unique
   password     String
+  totalBalance Int
   Bank_Account Bank_Account[]
   Pocket       Pocket[]
 }
@@ -38,8 +39,8 @@ model Bank_Account {
   bankName  BANK_NAMES
   balance   Decimal
   digits    Int
-  name      String
-  color     String
+  name      String @db.VarChar(55)
+  color     String @db.VarChar(30)
   userId    String
   user      User       @relation(fields: [userId], references: [id])
 }
@@ -49,8 +50,8 @@ model Pocket {
   createdAt          DateTime            @default(now())
   updatedAt          DateTime
   balance            Decimal
-  name               String
-  color              String
+  name               String @db.VarChar(30)
+  color              String @db.VarChar(30)
   icon               String
   pocketTransactions PocketTransaction[]
   userId             String
