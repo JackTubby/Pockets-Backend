@@ -16,5 +16,9 @@ This is an API built for Pockets.
 ## Schema
 ## Testing
 ## Deployment
+## How to run the app in dev
+### Commands
+- Run server - npm run dev
+- Run Posgres via Docker - docker-compose up -d
 ## Resources
 ## Support
