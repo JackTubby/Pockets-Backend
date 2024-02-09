@@ -1,5 +1,7 @@
 import express from 'express'
 import morgan from 'morgan'
+import { signIn, signUp } from './handlers/user'
+import router from './router'
 
 const app = express()
 
@@ -13,5 +15,9 @@ app.get('/', (req: any, res: any) => { // TODO: update types
   res.status(200)
   res.json({message: 'hello there!'})
 })
+
+app.use('/api', router)
+app.post('/signup', signUp)
+app.post('/signin', signIn)
 
 export default app
