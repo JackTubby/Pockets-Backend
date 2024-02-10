@@ -1,15 +1,15 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-export const comparePassword = (password: string, hash: any) => {
+export const comparePassword = (password: any, hash: any) => {
   return bcrypt.compare(password, hash);
 };
 
-export const hashPassword = (password: string) => {
+export const hashPassword = (password: any) => {
   return bcrypt.hash(password, 5);
 };
 
-export const createJWT = (user: { id: any; username: string }) => {
+export const createJWT = (user: any) => {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET environment variable is not defined");
   }

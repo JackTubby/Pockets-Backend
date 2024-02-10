@@ -2,13 +2,26 @@ import prisma from "../db";
 import { comparePassword, createJWT, hashPassword } from "../modules/auth";
 
 export const signUp = async (
-  req: { body: { username: any; password: any } },
+  req: {
+    body: {
+      username: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      totalBalance: number;
+    };
+  },
   res: any
 ) => {
   const user = await prisma.user.create({
     data: {
       username: req.body.username,
       password: await hashPassword(req.body.password),
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      totalBalance: req.body.totalBalance,
     },
   });
 
@@ -16,16 +29,23 @@ export const signUp = async (
   res.json({ token });
 };
 
-export const signIn = async (req, res) => {
+export const signIn = async (req: any, res: any) => {
+  const { username, password } = req.body;
+
   const user = await prisma.user.findUnique({
-    where: { username: req.body.username },
+    where: { username },
   });
 
-  const isValid = await comparePassword(req.body.password, user.password)
-  if (!isValid) {
-    res.status(401)
-    res.json({messsage: 'Nope'})
+  if (!user) {
+    res.status(401).json({ message: "User not found" });
+    return;
   }
-  const token = createJWT(user)
-  res.json({ token })
+  const isValid = await comparePassword(password, user.password);
+  if (!isValid) {
+    res.status(401).json({ message: "Invalid credentials" });
+    return;
+  }
+
+  const token = createJWT(user);
+  res.json({ token });
 };
