@@ -18,7 +18,7 @@ model User {
   lastName     String         @db.VarChar(30)
   email        String         @unique
   password     String
-  totalBalance Int
+  totalBalance Int            @default(0)
   Bank_Account Bank_Account[]
   Pocket       Pocket[]
 }
