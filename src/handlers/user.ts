@@ -9,7 +9,6 @@ export const signUp = async (
       firstName: string;
       lastName: string;
       email: string;
-      totalBalance: number;
     };
   },
   res: any
@@ -21,7 +20,6 @@ export const signUp = async (
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
-      totalBalance: req.body.totalBalance,
     },
   });
 
