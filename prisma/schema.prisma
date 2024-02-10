@@ -13,9 +13,9 @@ datasource db {
 model User {
   id           String         @id @default(uuid())
   createdAt    DateTime       @default(now())
-  username     String  @db.VarChar(30)
+  username     String         @unique
   firstName    String         @db.VarChar(30)
-  lastName     String @db.VarChar(30)
+  lastName     String         @db.VarChar(30)
   email        String         @unique
   password     String
   totalBalance Int
@@ -39,8 +39,8 @@ model Bank_Account {
   bankName  BANK_NAMES
   balance   Decimal
   digits    Int
-  name      String @db.VarChar(55)
-  color     String @db.VarChar(30)
+  name      String     @db.VarChar(55)
+  color     String     @db.VarChar(30)
   userId    String
   user      User       @relation(fields: [userId], references: [id])
 }
@@ -50,8 +50,8 @@ model Pocket {
   createdAt          DateTime            @default(now())
   updatedAt          DateTime
   balance            Decimal
-  name               String @db.VarChar(30)
-  color              String @db.VarChar(30)
+  name               String              @db.VarChar(30)
+  color              String              @db.VarChar(30)
   icon               String
   pocketTransactions PocketTransaction[]
   userId             String
@@ -79,7 +79,6 @@ model target {
   pocketId   String
   pocket     Pocket   @relation(fields: [pocketId], references: [id])
 }
-
 
 // pockets/accounts limits
 // total balance field in user table
