@@ -21,7 +21,7 @@ export const createJWT = (user: any) => {
   return token;
 };
 
-export const protect = (req: any, res: any, next: any) => { // UPDATE TYPES
+export const protect = (req: any, res: any, next: any) => {
   const bearer = req.headers.authorization; // check for the auth header
 
   if (!bearer) {
