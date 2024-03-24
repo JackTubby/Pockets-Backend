@@ -35,7 +35,7 @@ enum BANK_NAMES {
 model Bank_Account {
   id        String     @id @default(uuid())
   createdAt DateTime   @default(now())
-  updatedAt DateTime
+  updatedAt DateTime   @updatedAt
   bankName  BANK_NAMES
   balance   Decimal
   digits    Int
@@ -48,7 +48,7 @@ model Bank_Account {
 model Pocket {
   id                 String              @id @default(uuid())
   createdAt          DateTime            @default(now())
-  updatedAt          DateTime
+  updatedAt          DateTime            @updatedAt
   balance            Decimal
   name               String              @db.VarChar(30)
   color              String              @db.VarChar(30)
@@ -72,7 +72,7 @@ model PocketTransaction {
 model target {
   id         String   @id @default(uuid())
   createdAt  DateTime @default(now())
-  updatedAt  DateTime
+  updatedAt  DateTime @updatedAt
   target     Int
   targetDate DateTime
   current    Int
