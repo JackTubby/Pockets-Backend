@@ -1,10 +1,10 @@
 import prisma from "../db";
 
 export const getBankAccounts = async (req: any, res: any) => {
-  const userId = req.user?.id
+  const userId = req.user?.id;
 
   if (!userId) {
-    res.status(500).json({ message: 'User does not exist' })
+    res.status(500).json({ message: "User does not exist" });
   }
 
   try {
@@ -16,7 +16,6 @@ export const getBankAccounts = async (req: any, res: any) => {
         Bank_Account: true,
       },
     });
-    console.log('here', accounts)
     res.status(200).json(accounts);
   } catch (error) {
     console.error(error);
@@ -24,7 +23,23 @@ export const getBankAccounts = async (req: any, res: any) => {
   }
 };
 
-export const getBankAccount = (req: any, res: any) => {};
+export const getBankAccount = async (req: any, res: any) => {
+  const userId = req.user?.id;
+  const accountId = req.params.id;
+
+  try {
+    const account = await prisma.bank_Account.findUnique({
+      where: {
+        id: accountId,
+        userId: userId,
+      },
+    });
+    res.status(200).json(account);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to get bank account" });
+  }
+};
 
 export const createBankAccount = async (req: any, res: any) => {
   const { bankName, balance, digits, name, color } = req.body;
