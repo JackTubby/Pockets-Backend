@@ -1,49 +1,53 @@
 import prisma from "../db";
-import { Request as ExpressRequest, Response } from "express";
 
-interface BankAccountRequestBody extends ExpressRequest {
-  user?: {
-    id: string;
-  };
-  bankName: string;
-  balance: number;
-  lastFourDigits: string;
-  accountHolder: string;
-  color: string;
-}
+export const getBankAccounts = async (req: any, res: any) => {
+  const userId = req.user?.id
 
-export const getBankAccounts = (req: any, res: any) => {};
+  if (!userId) {
+    res.status(500).json({ message: 'User does not exist' })
+  }
+
+  try {
+    const accounts = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        Bank_Account: true,
+      },
+    });
+    console.log('here', accounts)
+    res.status(200).json(accounts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to get bank accounts" });
+  }
+};
 
 export const getBankAccount = (req: any, res: any) => {};
 
-export const createBankAccount = async (
-  req: BankAccountRequestBody,
-  res: Response
-) => {
+export const createBankAccount = async (req: any, res: any) => {
   const { bankName, balance, digits, name, color } = req.body;
   const loggedInUserId = req.user?.id;
-
   if (!loggedInUserId) {
-    // Handle the case where userId is undefined
     return res
       .status(400)
       .json({ message: "User ID is missing or not valid." });
   }
 
   try {
-    // Assuming you're using Prisma for database operations
     const account = await prisma.bank_Account.create({
       data: {
-        userId: loggedInUserId,
         bankName,
         balance,
         digits,
         name,
         color,
+        userId: loggedInUserId,
       },
     });
 
-    res.json(account);
+    res.status(200).json(account);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to create bank account" });
