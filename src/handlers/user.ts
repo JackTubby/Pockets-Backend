@@ -13,22 +13,43 @@ export const signUp = async (
   },
   res: any
 ) => {
-  const user = await prisma.user.create({
-    data: {
-      username: req.body.username,
-      password: await hashPassword(req.body.password),
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-    },
-  });
-
-  const token = createJWT(user);
-  res.json({ token });
+  const { username, password, firstName, lastName, email } = req.body;
+  if (!username && !password && !firstName && !lastName && !email) {
+    return res.json({ message: "Please fill in all the fields" });
+  }
+  try {
+    const user = await prisma.user.create({
+      data: {
+        username: username,
+        password: await hashPassword(password),
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+      },
+    });
+    if (user) {
+      res.json({ message: "User created please sign in!" });
+    } else {
+      return res.json({
+        message: "Something went wrong! Please try again later..",
+      });
+    }
+  } catch (error: any) {
+    if (error.code === "P2002") {
+      return res.json({ message: "That username already exists" });
+    }
+    return res.json({
+      message: "Something went wrong! Please try again later..",
+    });
+  }
 };
 
 export const signIn = async (req: any, res: any) => {
   const { username, password } = req.body;
+
+  if (!username && !password) {
+    res.json({ message: "Please fill in all the fields" });
+  }
 
   const user = await prisma.user.findUnique({
     where: { username },
