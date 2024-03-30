@@ -34,10 +34,13 @@ export const getBankAccount = async (req: any, res: any) => {
         userId: userId,
       },
     });
-    res.status(200).json(account);
+    if (!account) {
+      return res.status(404).json({ message: "No account found" });
+    }
+    res.json(account);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to get bank account" });
+    return res.status(500).json({ message: "Failed to get bank account" });
   }
 };
 
