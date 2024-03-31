@@ -72,6 +72,33 @@ export const createBankAccount = async (req: any, res: any) => {
   }
 };
 
-export const updateBankAccount = (req: any, res: any) => {};
+export const updateBankAccount = async (req: any, res: any) => {
+  const { bankName, balance, digits, name, color } = req.body;
+  const accountId = req.params.id;
+  const userId = req.user?.id;
+
+  try {
+    const account = await prisma.bank_Account.update({
+      where: {
+        id: accountId,
+        userId: userId,
+      },
+      data: {
+        bankName,
+        balance,
+        digits,
+        name,
+        color,
+      },
+    });
+    if (!account) {
+      res.status(404).json({ message: "Account could not be found" });
+    }
+    res.json(account);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to update bank account" });
+  }
+};
 
 export const deleteBankAccount = (req: any, res: any) => {};
