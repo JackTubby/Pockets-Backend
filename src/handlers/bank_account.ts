@@ -92,7 +92,7 @@ export const updateBankAccount = async (req: any, res: any) => {
       },
     });
     if (!account) {
-      res.status(404).json({ message: "Account could not be found" });
+      res.status(404).json({ message: "Account could not be updated" });
     }
     res.json(account);
   } catch (error) {
@@ -101,4 +101,23 @@ export const updateBankAccount = async (req: any, res: any) => {
   }
 };
 
-export const deleteBankAccount = (req: any, res: any) => {};
+export const deleteBankAccount = async (req: any, res: any) => {
+  const accountId = req.params.id;
+  const userId = req.user?.id;
+
+  try {
+    const account = await prisma.bank_Account.delete({
+      where: {
+        id: accountId,
+        userId: userId,
+      }
+    });
+    if (!account) {
+      res.status(404).json({ message: "Account could not be deleted" });
+    }
+    res.json(account);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to delete bank account" });
+  }
+};
