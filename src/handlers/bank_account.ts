@@ -1,4 +1,5 @@
 import prisma from "../db";
+import { Decimal } from 'decimal.js'
 
 export const getBankAccounts = async (req: any, res: any) => {
   const userId = req.user?.id;
@@ -110,7 +111,7 @@ export const deleteBankAccount = async (req: any, res: any) => {
       where: {
         id: accountId,
         userId: userId,
-      }
+      },
     });
     if (!account) {
       res.status(404).json({ message: "Account could not be deleted" });
@@ -119,5 +120,27 @@ export const deleteBankAccount = async (req: any, res: any) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to delete bank account" });
+  }
+};
+
+export const totalBalance = async (req: any, res: any) => {
+  const userId = req.user?.id;
+  try {
+    const accounts = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        Bank_Account: true,
+      },
+    });
+    if (!accounts?.Bank_Account) {
+      res.status(404).json({ message: "No accounts found" });
+    }
+    const calculateTotal = accounts?.Bank_Account.reduce((acc, item) => acc.plus(item.balance), new Decimal(0))
+    res.json(calculateTotal)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to get bank Accounts" });
   }
 };
