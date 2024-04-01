@@ -7,10 +7,8 @@ export const getPockets = async (req: any, res: any) => {
     res.status(500).json({ message: "User does not exist" });
   }
 
-  console.log('user id: ', userId)
-
   try {
-    const accounts = await prisma.user.findUnique({
+    const pockets = await prisma.user.findUnique({
       where: {
         id: userId,
       },
@@ -18,8 +16,7 @@ export const getPockets = async (req: any, res: any) => {
         Pocket: true,
       },
     });
-    console.log('should be accounts: ', accounts)
-    res.status(200).json(accounts);
+    res.status(200).json(pockets);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to get pockets" });
