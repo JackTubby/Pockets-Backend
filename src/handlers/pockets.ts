@@ -13,7 +13,12 @@ export const getPockets = async (req: any, res: any) => {
         id: userId,
       },
       include: {
-        Pocket: true,
+        Pocket: {
+          include: {
+            pocketTransactions: true,
+            target: true,
+          },
+        },
       },
     });
     res.status(200).json(pockets);
@@ -32,6 +37,10 @@ export const getPocket = async (req: any, res: any) => {
       where: {
         id: pocketId,
         userId: userId,
+      },
+      include: {
+        pocketTransactions: true,
+        target: true,
       },
     });
     if (!pocket) {
