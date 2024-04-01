@@ -54,7 +54,7 @@ export const getPocket = async (req: any, res: any) => {
 };
 
 export const createPocket = async (req: any, res: any) => {
-  const { balance, name, color, icon } = req.body;
+  const { balance, name, color, icon, pocketTransactions, target } = req.body;
   const loggedInUserId = req.user?.id;
   if (!loggedInUserId) {
     return res
@@ -69,6 +69,12 @@ export const createPocket = async (req: any, res: any) => {
         name,
         color,
         icon,
+        pocketTransactions: {
+          create: pocketTransactions,
+        },
+        target: {
+          create: target,
+        },
         userId: loggedInUserId,
       },
     });
@@ -81,7 +87,7 @@ export const createPocket = async (req: any, res: any) => {
 };
 
 export const updatePocket = async (req: any, res: any) => {
-  const { balance, name, color, icon } = req.body;
+  const { balance, name, color, icon, pocketTransactions, target } = req.body;
   const pocketId = req.params.id;
   const userId = req.user?.id;
 
@@ -96,6 +102,12 @@ export const updatePocket = async (req: any, res: any) => {
         name,
         color,
         icon,
+        pocketTransactions: {
+          create: pocketTransactions,
+        },
+        target: {
+          create: target,
+        },
       },
     });
     if (!pocket) {
