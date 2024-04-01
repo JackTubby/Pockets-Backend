@@ -140,3 +140,7 @@ export const deletePocket = async (req: any, res: any) => {
     res.status(500).json({ message: "Failed to delete pocket" });
   }
 };
+
+export const pocketTotalBalance = async () => {
+  const pockets = "";
+};
