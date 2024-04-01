@@ -5,6 +5,7 @@ import {
   createBankAccount,
   updateBankAccount,
   deleteBankAccount,
+  totalBalance,
 } from "./handlers/bank_account";
 import {
   getPocket,
@@ -12,6 +13,7 @@ import {
   createPocket,
   updatePocket,
   deletePocket,
+  pocketTotalBalance,
 } from "./handlers/pockets";
 import { body, query, oneOf, validationResult } from "express-validator";
 
@@ -35,5 +37,11 @@ router.get("/pocket/:id", query(), getPocket);
 router.put("/pocket/:id", updatePocket);
 router.post("/pocket", createPocket);
 router.delete("/pocket/:id", deletePocket);
+
+/**
+ * Total
+ */
+router.get("/totalBalance", totalBalance);
+router.get("/pocketTotalBalance", pocketTotalBalance);
 
 export default router;
