@@ -1,4 +1,5 @@
 import prisma from "../db";
+import { Decimal } from 'decimal.js'
 
 export const getPockets = async (req: any, res: any) => {
   const userId = req.user?.id;
@@ -141,6 +142,27 @@ export const deletePocket = async (req: any, res: any) => {
   }
 };
 
-export const pocketTotalBalance = async () => {
-  const pockets = "";
+export const pocketTotalBalance = async (req: any, res: any) => {
+  const userId = req.user?.id;
+  try {
+    const pockets = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        Pocket: true,
+      },
+    });
+    if (!pockets?.Pocket) {
+      res.status(404).json({ message: "No pocket found" });
+    }
+    const calculateTotal = pockets?.Pocket.reduce(
+      (acc, item) => acc.plus(item.balance),
+      new Decimal(0)
+    );
+    res.json(calculateTotal);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to get pocket" });
+  }
 };
