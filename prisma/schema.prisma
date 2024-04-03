@@ -57,7 +57,7 @@ model Pocket {
   pocketTransactions PocketTransaction[]
   userId             String
   user               User                @relation(fields: [userId], references: [id])
-  target             target[]
+  target             target[] 
   isMain             Boolean             @default(false)
 }
 
@@ -68,18 +68,17 @@ model PocketTransaction {
   balanceAfter    Decimal
   isDeposit       Boolean
   pocketId        String
-  pocket          Pocket   @relation(fields: [pocketId], references: [id])
+  pocket          Pocket   @relation(fields: [pocketId], references: [id], onDelete: Cascade)
 }
 
 model target {
   id         String   @id @default(uuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  target     Int
+  target     Decimal
   targetDate DateTime
-  current    Int
   pocketId   String
-  pocket     Pocket   @relation(fields: [pocketId], references: [id])
+  pocket     Pocket   @relation(fields: [pocketId], references: [id], onDelete: Cascade)
 }
 
 // pockets/accounts limits
