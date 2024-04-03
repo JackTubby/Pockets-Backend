@@ -80,8 +80,3 @@ model target {
   pocketId   String
   pocket     Pocket   @relation(fields: [pocketId], references: [id], onDelete: Cascade)
 }
-
-// pockets/accounts limits
-// total balance field in user table
-// ask g if where we work out the total balance or check that the pocket does not excceed goes in the route steps..
-// have another think through the db logic - even more so on the pockets
