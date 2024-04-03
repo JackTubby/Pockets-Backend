@@ -26,7 +26,7 @@ export const getPocket = async (req: any, res: any) => {
 };
 
 export const createPocket = async (req: any, res: any) => {
-  const { balance, name, color, icon, pocketTransactions, target } = req.body;
+  const { balance, name, color, icon, target } = req.body;
   const loggedInUserId = req.user?.id;
   if (!loggedInUserId) {
     return res
@@ -35,6 +35,11 @@ export const createPocket = async (req: any, res: any) => {
   }
 
   try {
+    const pocketTransactions = {
+      previousBalance: 0,
+      balanceAfter: balance,
+      isDeposit: true,
+    };
     const pocket = await prisma.pocket.create({
       data: {
         balance,
