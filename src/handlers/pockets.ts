@@ -1,31 +1,15 @@
 import prisma from "../db";
 import { Decimal } from "decimal.js";
+import { getAll, getOne } from "../helpers/pockets";
 
 export const getPockets = async (req: any, res: any) => {
   const userId = req.user?.id;
 
-  if (!userId) {
-    res.status(500).json({ message: "User does not exist" });
-  }
-
-  try {
-    const pockets = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      include: {
-        Pocket: {
-          include: {
-            pocketTransactions: true,
-            target: true,
-          },
-        },
-      },
-    });
-    res.status(200).json(pockets);
-  } catch (error) {
-    console.error(error);
+  const result = await getAll(userId);
+  if (result.error) {
     res.status(500).json({ message: "Failed to get pockets" });
+  } else {
+    res.status(200).json(result);
   }
 };
 
@@ -33,24 +17,11 @@ export const getPocket = async (req: any, res: any) => {
   const userId = req.user?.id;
   const pocketId = req.params.id;
 
-  try {
-    const pocket = await prisma.pocket.findUnique({
-      where: {
-        id: pocketId,
-        userId: userId,
-      },
-      include: {
-        pocketTransactions: true,
-        target: true,
-      },
-    });
-    if (!pocket) {
-      return res.status(404).json({ message: "No pocket found" });
-    }
-    res.json(pocket);
-  } catch (error) {
-    console.error(error);
+  const result = await getOne(userId, pocketId);
+  if (result.error) {
     return res.status(500).json({ message: "Failed to get pocket" });
+  } else {
+    res.json(result);
   }
 };
 
@@ -106,14 +77,14 @@ export const updatePocket = async (req: any, res: any) => {
     if (!getPocket) {
       return res.status(404).json({ message: "No pocket found" });
     }
-    let pocketTransactions
+    let pocketTransactions;
     if (balance) {
-      let isDeposit
-      balance < getPocket.balance ? isDeposit = false : isDeposit = true
+      let isDeposit;
+      balance < getPocket.balance ? (isDeposit = false) : (isDeposit = true);
       pocketTransactions = {
         previousBalance: getPocket.balance,
         balanceAfter: balance,
-        isDeposit
+        isDeposit,
       };
     }
 
