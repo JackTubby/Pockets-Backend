@@ -1,5 +1,5 @@
 import prisma from "../db";
-import { Decimal } from 'decimal.js'
+import { Decimal } from "decimal.js";
 
 export const getPockets = async (req: any, res: any) => {
   const userId = req.user?.id;
@@ -88,11 +88,35 @@ export const createPocket = async (req: any, res: any) => {
 };
 
 export const updatePocket = async (req: any, res: any) => {
-  const { balance, name, color, icon, pocketTransactions, target } = req.body;
+  const { balance, name, color, icon, target } = req.body;
   const pocketId = req.params.id;
   const userId = req.user?.id;
 
   try {
+    const getPocket = await prisma.pocket.findUnique({
+      where: {
+        id: pocketId,
+        userId: userId,
+      },
+      include: {
+        pocketTransactions: true,
+        target: true,
+      },
+    });
+    if (!getPocket) {
+      return res.status(404).json({ message: "No pocket found" });
+    }
+    let pocketTransactions
+    if (balance) {
+      let isDeposit
+      balance < getPocket.balance ? isDeposit = false : isDeposit = true
+      pocketTransactions = {
+        previousBalance: getPocket.balance,
+        balanceAfter: balance,
+        isDeposit
+      };
+    }
+
     const pocket = await prisma.pocket.update({
       where: {
         id: pocketId,
@@ -126,16 +150,16 @@ export const deletePocket = async (req: any, res: any) => {
   const userId = req.user?.id;
 
   try {
-    const account = await prisma.pocket.delete({
+    const pocket = await prisma.pocket.delete({
       where: {
         id: pocketId,
         userId: userId,
       },
     });
-    if (!account) {
+    if (!pocket) {
       res.status(404).json({ message: "Pocket could not be deleted" });
     }
-    res.json(account);
+    res.json(pocket);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to delete pocket" });
