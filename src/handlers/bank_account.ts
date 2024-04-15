@@ -1,7 +1,31 @@
 import prisma from "../db";
 import { Decimal } from 'decimal.js'
+import { Request, Response } from 'express';
 
-export const getBankAccounts = async (req: any, res: any) => {
+
+enum BANK_NAMES {
+  NATWEST = "NATWEST",
+  NATIONWIDE = "NATIONWIDE",
+  HALIFAX = "HALIFAX",
+  HSBC = "HSBC",
+  SANTANDER = "SANTANDER",
+  MONZO = "MONZO"
+}
+
+interface CustomRequest extends Request {
+  body: {
+    bankName: BANK_NAMES;
+    balance: number;
+    digits: number;
+    name: string;
+    color: string;
+  };
+  user?: {
+    id: string;
+  }
+}
+
+export const getBankAccounts = async (req: CustomRequest, res: Response) => {
   const userId = req.user?.id;
 
   if (!userId) {
@@ -24,7 +48,7 @@ export const getBankAccounts = async (req: any, res: any) => {
   }
 };
 
-export const getBankAccount = async (req: any, res: any) => {
+export const getBankAccount = async (req: CustomRequest, res: Response) => {
   const userId = req.user?.id;
   const accountId = req.params.id;
 
@@ -45,7 +69,8 @@ export const getBankAccount = async (req: any, res: any) => {
   }
 };
 
-export const createBankAccount = async (req: any, res: any) => {
+export const createBankAccount = async (req: CustomRequest, res: Response) => {
+  console.log('here: ', req)
   const { bankName, balance, digits, name, color } = req.body;
   const loggedInUserId = req.user?.id;
   if (!loggedInUserId) {
@@ -73,7 +98,7 @@ export const createBankAccount = async (req: any, res: any) => {
   }
 };
 
-export const updateBankAccount = async (req: any, res: any) => {
+export const updateBankAccount = async (req: CustomRequest, res: Response) => {
   const { bankName, balance, digits, name, color } = req.body;
   const accountId = req.params.id;
   const userId = req.user?.id;
@@ -102,7 +127,7 @@ export const updateBankAccount = async (req: any, res: any) => {
   }
 };
 
-export const deleteBankAccount = async (req: any, res: any) => {
+export const deleteBankAccount = async (req: CustomRequest, res: Response) => {
   const accountId = req.params.id;
   const userId = req.user?.id;
 
@@ -123,7 +148,7 @@ export const deleteBankAccount = async (req: any, res: any) => {
   }
 };
 
-export const totalBalance = async (req: any, res: any) => {
+export const totalBalance = async (req: CustomRequest, res: Response) => {
   const userId = req.user?.id;
   try {
     const accounts = await prisma.user.findUnique({
