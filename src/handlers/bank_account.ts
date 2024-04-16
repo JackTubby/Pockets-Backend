@@ -70,7 +70,6 @@ export const getBankAccount = async (req: CustomRequest, res: Response) => {
 };
 
 export const createBankAccount = async (req: CustomRequest, res: Response) => {
-  console.log('here: ', req)
   const { bankName, balance, digits, name, color } = req.body;
   const loggedInUserId = req.user.id;
   if (!loggedInUserId) {
