@@ -1,9 +1,28 @@
 import prisma from "../db";
 import { Decimal } from "decimal.js";
 import { getAll, getOne } from "../helpers/pockets";
+import { Request, Response } from "express";
 
-export const getPockets = async (req: any, res: any) => {
-  const userId = req.user?.id;
+interface CustomRequest extends Request {
+  body: {
+    balance: number;
+    name: string;
+    color: string;
+    icon: string;
+    pocketTransactions: {
+      previousBalance: number;
+      balanceAfter: number;
+      isDeposit: boolean;
+    };
+    target: [];
+  };
+  user: {
+    id: string;
+  };
+}
+
+export const getPockets = async (req: CustomRequest, res: Response) => {
+  const userId = req.user.id;
 
   const result = await getAll(userId);
   if (result.error) {
@@ -13,8 +32,8 @@ export const getPockets = async (req: any, res: any) => {
   }
 };
 
-export const getPocket = async (req: any, res: any) => {
-  const userId = req.user?.id;
+export const getPocket = async (req: CustomRequest, res: Response) => {
+  const userId = req.user.id;
   const pocketId = req.params.id;
 
   const result = await getOne(userId, pocketId);
@@ -25,9 +44,9 @@ export const getPocket = async (req: any, res: any) => {
   }
 };
 
-export const createPocket = async (req: any, res: any) => {
+export const createPocket = async (req: CustomRequest, res: Response) => {
   const { balance, name, color, icon, target } = req.body;
-  const loggedInUserId = req.user?.id;
+  const loggedInUserId = req.user.id;
   if (!loggedInUserId) {
     return res
       .status(400)
@@ -63,10 +82,10 @@ export const createPocket = async (req: any, res: any) => {
   }
 };
 
-export const updatePocket = async (req: any, res: any) => {
+export const updatePocket = async (req: CustomRequest, res: Response) => {
   const { balance, name, color, icon, target } = req.body;
   const pocketId = req.params.id;
-  const userId = req.user?.id;
+  const userId = req.user.id;
 
   try {
     const getPocket = await prisma.pocket.findUnique({
@@ -121,9 +140,9 @@ export const updatePocket = async (req: any, res: any) => {
   }
 };
 
-export const deletePocket = async (req: any, res: any) => {
+export const deletePocket = async (req: CustomRequest, res: Response) => {
   const pocketId = req.params.id;
-  const userId = req.user?.id;
+  const userId = req.user.id;
 
   try {
     const pocket = await prisma.pocket.delete({
@@ -142,8 +161,8 @@ export const deletePocket = async (req: any, res: any) => {
   }
 };
 
-export const pocketTotalBalance = async (req: any, res: any) => {
-  const userId = req.user?.id;
+export const pocketTotalBalance = async (req: CustomRequest, res: Response) => {
+  const userId = req.user.id;
   try {
     const pockets = await prisma.user.findUnique({
       where: {

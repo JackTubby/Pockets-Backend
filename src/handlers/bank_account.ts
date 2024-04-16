@@ -20,13 +20,13 @@ interface CustomRequest extends Request {
     name: string;
     color: string;
   };
-  user?: {
+  user: {
     id: string;
   }
 }
 
 export const getBankAccounts = async (req: CustomRequest, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user.id;
 
   if (!userId) {
     res.status(500).json({ message: "User does not exist" });
@@ -49,7 +49,7 @@ export const getBankAccounts = async (req: CustomRequest, res: Response) => {
 };
 
 export const getBankAccount = async (req: CustomRequest, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user.id;
   const accountId = req.params.id;
 
   try {
@@ -72,7 +72,7 @@ export const getBankAccount = async (req: CustomRequest, res: Response) => {
 export const createBankAccount = async (req: CustomRequest, res: Response) => {
   console.log('here: ', req)
   const { bankName, balance, digits, name, color } = req.body;
-  const loggedInUserId = req.user?.id;
+  const loggedInUserId = req.user.id;
   if (!loggedInUserId) {
     return res
       .status(400)
@@ -101,7 +101,7 @@ export const createBankAccount = async (req: CustomRequest, res: Response) => {
 export const updateBankAccount = async (req: CustomRequest, res: Response) => {
   const { bankName, balance, digits, name, color } = req.body;
   const accountId = req.params.id;
-  const userId = req.user?.id;
+  const userId = req.user.id;
 
   try {
     const account = await prisma.bank_Account.update({
@@ -129,7 +129,7 @@ export const updateBankAccount = async (req: CustomRequest, res: Response) => {
 
 export const deleteBankAccount = async (req: CustomRequest, res: Response) => {
   const accountId = req.params.id;
-  const userId = req.user?.id;
+  const userId = req.user.id;
 
   try {
     const account = await prisma.bank_Account.delete({
@@ -149,7 +149,7 @@ export const deleteBankAccount = async (req: CustomRequest, res: Response) => {
 };
 
 export const totalBalance = async (req: CustomRequest, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user.id;
   try {
     const accounts = await prisma.user.findUnique({
       where: {

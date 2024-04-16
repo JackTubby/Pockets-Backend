@@ -1,17 +1,20 @@
 import prisma from "../db";
 import { comparePassword, createJWT, hashPassword } from "../modules/auth";
+import { Request, Response } from "express";
+
+interface CustomRequest extends Request {
+  body: {
+    username: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  }
+}
 
 export const signUp = async (
-  req: {
-    body: {
-      username: string;
-      password: string;
-      firstName: string;
-      lastName: string;
-      email: string;
-    };
-  },
-  res: any
+  req: CustomRequest,
+  res: Response
 ) => {
   const { username, password, firstName, lastName, email } = req.body;
   if (!username && !password && !firstName && !lastName && !email) {
@@ -44,7 +47,7 @@ export const signUp = async (
   }
 };
 
-export const signIn = async (req: any, res: any) => {
+export const signIn = async (req: CustomRequest, res: Response) => {
   const { username, password } = req.body;
 
   if (!username && !password) {
