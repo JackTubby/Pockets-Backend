@@ -4,6 +4,11 @@
     "outDir": "dist",
     "lib": ["esnext"],
     "esModuleInterop": true,
-    "strict": true
-  }
+    "strict": true,
+    "types": ["express"]
+  },
+  "include": [
+    "src/**/*",
+    "custom-types.d.ts"
+  ]
 }
