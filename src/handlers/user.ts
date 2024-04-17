@@ -16,6 +16,8 @@ export const signUp = async (
   req: CustomRequest,
   res: Response
 ) => {
+// TODO: username is defined unique in schema so check what error that throws back
+
   const { username, password, firstName, lastName, email } = req.body;
   if (!username && !password && !firstName && !lastName && !email) {
     return res.json({ message: "Please fill in all the fields" });
