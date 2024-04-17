@@ -1,7 +1,6 @@
 import prisma from "../db";
-import { Decimal } from 'decimal.js'
-import { Request, Response } from 'express';
-
+import { Decimal } from "decimal.js";
+import { Request, Response } from "express";
 
 enum BANK_NAMES {
   NATWEST = "NATWEST",
@@ -9,24 +8,27 @@ enum BANK_NAMES {
   HALIFAX = "HALIFAX",
   HSBC = "HSBC",
   SANTANDER = "SANTANDER",
-  MONZO = "MONZO"
+  MONZO = "MONZO",
 }
 
-interface CustomRequest extends Request {
+interface BankAccountRequest extends Request {
+  user?: {
+    id: string;
+  };
   body: {
     bankName: BANK_NAMES;
-    balance: number;
+    balance: string;
     digits: number;
     name: string;
     color: string;
   };
-  user: {
-    id: string;
-  }
+  params: {
+    id?: string;
+  };
 }
 
-export const getBankAccounts = async (req: CustomRequest, res: Response) => {
-  const userId = req.user.id;
+export const getBankAccounts = async (req: BankAccountRequest, res: Response) => {
+  const userId = req.user?.id;
 
   if (!userId) {
     res.status(500).json({ message: "User does not exist" });
@@ -48,8 +50,8 @@ export const getBankAccounts = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const getBankAccount = async (req: CustomRequest, res: Response) => {
-  const userId = req.user.id;
+export const getBankAccount = async (req: BankAccountRequest, res: Response) => {
+  const userId = req.user?.id;
   const accountId = req.params.id;
 
   try {
@@ -69,9 +71,9 @@ export const getBankAccount = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const createBankAccount = async (req: CustomRequest, res: Response) => {
+export const createBankAccount = async (req: BankAccountRequest, res: Response) => {
   const { bankName, balance, digits, name, color } = req.body;
-  const loggedInUserId = req.user.id;
+  const loggedInUserId = req.user?.id;
   if (!loggedInUserId) {
     return res
       .status(400)
@@ -97,10 +99,10 @@ export const createBankAccount = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const updateBankAccount = async (req: CustomRequest, res: Response) => {
+export const updateBankAccount = async (req: BankAccountRequest, res: Response) => {
   const { bankName, balance, digits, name, color } = req.body;
   const accountId = req.params.id;
-  const userId = req.user.id;
+  const userId = req.user?.id;
 
   try {
     const account = await prisma.bank_Account.update({
@@ -126,9 +128,9 @@ export const updateBankAccount = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const deleteBankAccount = async (req: CustomRequest, res: Response) => {
+export const deleteBankAccount = async (req: BankAccountRequest, res: Response) => {
   const accountId = req.params.id;
-  const userId = req.user.id;
+  const userId = req.user?.id;
 
   try {
     const account = await prisma.bank_Account.delete({
@@ -147,8 +149,8 @@ export const deleteBankAccount = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const totalBalance = async (req: CustomRequest, res: Response) => {
-  const userId = req.user.id;
+export const totalBalance = async (req: BankAccountRequest, res: Response) => {
+  const userId = req.user?.id;
   try {
     const accounts = await prisma.user.findUnique({
       where: {
@@ -161,8 +163,11 @@ export const totalBalance = async (req: CustomRequest, res: Response) => {
     if (!accounts?.Bank_Account) {
       res.status(404).json({ message: "No accounts found" });
     }
-    const calculateTotal = accounts?.Bank_Account.reduce((acc, item) => acc.plus(item.balance), new Decimal(0))
-    res.json(calculateTotal)
+    const calculateTotal = accounts?.Bank_Account.reduce(
+      (acc, item) => acc.plus(item.balance),
+      new Decimal(0)
+    );
+    res.json(calculateTotal);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to get bank Accounts" });

@@ -3,27 +3,28 @@ import { Decimal } from "decimal.js";
 import { getAll, getOne } from "../helpers/pockets";
 import { Request, Response } from "express";
 
-interface CustomRequest extends Request {
+interface PocketsRequest extends Request {
+  user?: {
+    id: string;
+  };
   body: {
-    balance: number;
+    balance: string;
     name: string;
     color: string;
     icon: string;
-    pocketTransactions: {
-      previousBalance: number;
-      balanceAfter: number;
-      isDeposit: boolean;
-    };
-    target: [];
+    pocketTransactions?: {};
+    target?: {};
   };
-  user: {
-    id: string;
+  params: {
+    id?: string;
   };
 }
 
-export const getPockets = async (req: CustomRequest, res: Response) => {
-  const userId = req.user.id;
-
+export const getPockets = async (req: PocketsRequest, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(400).json({ message: "User does not exist" });
+  }
   const result = await getAll(userId);
   if (result.error) {
     res.status(500).json({ message: "Failed to get pockets" });
@@ -32,8 +33,12 @@ export const getPockets = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const getPocket = async (req: CustomRequest, res: Response) => {
-  const userId = req.user.id;
+
+export const getPocket = async (req: PocketsRequest, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(400).json({ message: "User does not exist" });
+  }
   const pocketId = req.params.id;
 
   const result = await getOne(userId, pocketId);
@@ -44,9 +49,9 @@ export const getPocket = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const createPocket = async (req: CustomRequest, res: Response) => {
+export const createPocket = async (req: PocketsRequest, res: Response) => {
   const { balance, name, color, icon, target } = req.body;
-  const loggedInUserId = req.user.id;
+  const loggedInUserId = req.user?.id;
   if (!loggedInUserId) {
     return res
       .status(400)
@@ -82,10 +87,13 @@ export const createPocket = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const updatePocket = async (req: CustomRequest, res: Response) => {
+export const updatePocket = async (req: PocketsRequest, res: Response) => {
   const { balance, name, color, icon, target } = req.body;
   const pocketId = req.params.id;
-  const userId = req.user.id;
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(400).json({ message: "User does not exist" });
+  }
 
   try {
     const getPocket = await prisma.pocket.findUnique({
@@ -140,9 +148,12 @@ export const updatePocket = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const deletePocket = async (req: CustomRequest, res: Response) => {
+export const deletePocket = async (req: PocketsRequest, res: Response) => {
   const pocketId = req.params.id;
-  const userId = req.user.id;
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(400).json({ message: "User does not exist" });
+  }
 
   try {
     const pocket = await prisma.pocket.delete({
@@ -161,8 +172,11 @@ export const deletePocket = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const pocketTotalBalance = async (req: CustomRequest, res: Response) => {
-  const userId = req.user.id;
+export const pocketTotalBalance = async (req: PocketsRequest, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(400).json({ message: "User does not exist" });
+  }
   try {
     const pockets = await prisma.user.findUnique({
       where: {
