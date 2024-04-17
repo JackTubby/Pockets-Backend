@@ -8,12 +8,12 @@ interface PocketsRequest extends Request {
     id: string;
   };
   body: {
-    balance: string;
+    balance: Decimal;
     name: string;
     color: string;
     icon: string;
-    pocketTransactions?: {};
-    target?: {};
+    pocketTransactions?: [];
+    target?: [];
   };
   params: {
     id?: string;
@@ -23,29 +23,32 @@ interface PocketsRequest extends Request {
 export const getPockets = async (req: PocketsRequest, res: Response) => {
   const userId = req.user?.id;
   if (!userId) {
-    res.status(400).json({ message: "User does not exist" });
+    return res.status(400).json({ message: "User does not exist" });
   }
-  const result = await getAll(userId);
-  if (result.error) {
-    res.status(500).json({ message: "Failed to get pockets" });
-  } else {
-    res.status(200).json(result);
+  try {
+    const result = await getAll(userId);
+    if (result.error) {
+      return res.status(500).json({ message: "Failed to get pockets" });
+    } else {
+      return res.status(200).json(result);
+    }
+  } catch (error) {
+    return res.status(500).json(error)
   }
 };
 
-
 export const getPocket = async (req: PocketsRequest, res: Response) => {
   const userId = req.user?.id;
-  if (!userId) {
-    res.status(400).json({ message: "User does not exist" });
-  }
   const pocketId = req.params.id;
+  if (!userId || !pocketId) {
+    return res.status(400).json({ message: "User does not exist or pocket" });
+  }
 
   const result = await getOne(userId, pocketId);
   if (result.error) {
     return res.status(500).json({ message: "Failed to get pocket" });
   } else {
-    res.json(result);
+    return res.json(result);
   }
 };
 
@@ -80,10 +83,10 @@ export const createPocket = async (req: PocketsRequest, res: Response) => {
       },
     });
 
-    res.status(200).json(pocket);
+    return res.status(200).json(pocket);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to create pocket" });
+    return res.status(500).json({ message: "Failed to create pocket" });
   }
 };
 
@@ -92,7 +95,7 @@ export const updatePocket = async (req: PocketsRequest, res: Response) => {
   const pocketId = req.params.id;
   const userId = req.user?.id;
   if (!userId) {
-    res.status(400).json({ message: "User does not exist" });
+    return res.status(400).json({ message: "User does not exist" });
   }
 
   try {
@@ -139,12 +142,12 @@ export const updatePocket = async (req: PocketsRequest, res: Response) => {
       },
     });
     if (!pocket) {
-      res.status(404).json({ message: "Pocket could not be updated" });
+      return res.status(404).json({ message: "Pocket could not be updated" });
     }
-    res.json(pocket);
+    return res.json(pocket);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to update pocket" });
+    return res.status(500).json({ message: "Failed to update pocket" });
   }
 };
 
@@ -152,7 +155,7 @@ export const deletePocket = async (req: PocketsRequest, res: Response) => {
   const pocketId = req.params.id;
   const userId = req.user?.id;
   if (!userId) {
-    res.status(400).json({ message: "User does not exist" });
+    return res.status(400).json({ message: "User does not exist" });
   }
 
   try {
@@ -163,19 +166,22 @@ export const deletePocket = async (req: PocketsRequest, res: Response) => {
       },
     });
     if (!pocket) {
-      res.status(404).json({ message: "Pocket could not be deleted" });
+      return res.status(404).json({ message: "Pocket could not be deleted" });
     }
-    res.json(pocket);
+    return res.json(pocket);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to delete pocket" });
+    return res.status(500).json({ message: "Failed to delete pocket" });
   }
 };
 
-export const pocketTotalBalance = async (req: PocketsRequest, res: Response) => {
+export const pocketTotalBalance = async (
+  req: PocketsRequest,
+  res: Response
+) => {
   const userId = req.user?.id;
   if (!userId) {
-    res.status(400).json({ message: "User does not exist" });
+    return res.status(400).json({ message: "User does not exist" });
   }
   try {
     const pockets = await prisma.user.findUnique({
@@ -187,15 +193,15 @@ export const pocketTotalBalance = async (req: PocketsRequest, res: Response) => 
       },
     });
     if (!pockets?.Pocket) {
-      res.status(404).json({ message: "No pocket found" });
+      return res.status(404).json({ message: "No pocket found" });
     }
     const calculateTotal = pockets?.Pocket.reduce(
       (acc, item) => acc.plus(item.balance),
       new Decimal(0)
     );
-    res.json(calculateTotal);
+    return res.json(calculateTotal);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to get pocket" });
+    return res.status(500).json({ message: "Failed to get pocket" });
   }
 };
