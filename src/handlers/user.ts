@@ -1,26 +1,24 @@
-import prisma from "../db";
-import { comparePassword, createJWT, hashPassword } from "../modules/auth";
-import { Request, Response } from "express";
+import prisma from '../db'
+import { comparePassword, createJWT, hashPassword } from '../modules/auth'
+import { Request, Response } from 'express'
+import jwt from 'jsonwebtoken';
 
 interface CustomRequest extends Request {
   body: {
-    username: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    email: string;
+    username: string
+    password: string
+    firstName: string
+    lastName: string
+    email: string
   }
 }
 
-export const signUp = async (
-  req: CustomRequest,
-  res: Response
-) => {
-// TODO: username is defined unique in schema so check what error that throws back
+export const signUp = async (req: CustomRequest, res: Response) => {
+  // TODO: username is defined unique in schema so check what error that throws back
 
-  const { username, password, firstName, lastName, email } = req.body;
+  const { username, password, firstName, lastName, email } = req.body
   if (!username && !password && !firstName && !lastName && !email) {
-    return res.json({ message: "Please fill in all the fields" });
+    return res.json({ message: 'Please fill in all the fields' })
   }
   try {
     const user = await prisma.user.create({
@@ -31,45 +29,57 @@ export const signUp = async (
         lastName: lastName,
         email: email,
       },
-    });
+    })
     if (user) {
-      res.json({ message: "User created please sign in!" });
+      res.json({ message: 'User created please sign in!' })
     } else {
       return res.json({
-        message: "Something went wrong! Please try again later..",
-      });
+        message: 'Something went wrong! Please try again later..',
+      })
     }
   } catch (error: any) {
-    if (error.code === "P2002") {
-      return res.json({ message: "That username already exists" });
+    if (error.code === 'P2002') {
+      return res.json({ message: 'That username already exists' })
     }
     return res.json({
-      message: "Something went wrong! Please try again later..",
-    });
+      message: 'Something went wrong! Please try again later..',
+    })
   }
-};
+}
 
 export const signIn = async (req: CustomRequest, res: Response) => {
-  const { username, password } = req.body;
+  const { username, password } = req.body
 
   if (!username && !password) {
-    res.json({ message: "Please fill in all the fields" });
+    res.status(400).json({ message: 'Please fill in all the fields' })
   }
 
-  const user = await prisma.user.findUnique({
-    where: { username },
-  });
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username },
+    })
 
-  if (!user) {
-    res.status(401).json({ message: "User not found" });
-    return;
-  }
-  const isValid = await comparePassword(password, user.password);
-  if (!isValid) {
-    res.status(401).json({ message: "Invalid credentials" });
-    return;
-  }
+    if (!user) {
+      res.status(401).json({ message: 'User not found' })
+      return
+    }
+    const isValid = await comparePassword(password, user.password)
+    if (!isValid) {
+      res.status(401).json({ message: 'Invalid credentials' })
+      return
+    }
 
-  const token = createJWT(user);
-  res.json({ token });
-};
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+      expiresIn: '1h',
+    })
+
+    res.status(200).json({
+      token,
+      user: {
+        authorisedAccounts: [{ id: user.id }],
+      },
+    })
+  } catch (error: any) {
+    res.status(500).json({ message: 'Something went wrong during the sigin process' })
+  }
+}
