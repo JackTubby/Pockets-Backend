@@ -33,7 +33,7 @@ export const signUp = async (req: CustomRequest, res: Response) => {
     if (user) {
       res.json({ message: 'User created please sign in!' })
     } else {
-      return res.json({
+      return res.status(500).json({
         message: 'Something went wrong! Please try again later..',
       })
     }
@@ -41,7 +41,7 @@ export const signUp = async (req: CustomRequest, res: Response) => {
     if (error.code === 'P2002') {
       return res.json({ message: 'That username already exists' })
     }
-    return res.json({
+    return res.status(500).json({
       message: 'Something went wrong! Please try again later..',
     })
   }
@@ -50,8 +50,8 @@ export const signUp = async (req: CustomRequest, res: Response) => {
 export const signIn = async (req: CustomRequest, res: Response) => {
   const { username, password } = req.body
 
-  if (!username && !password) {
-    res.status(400).json({ message: 'Please fill in all the fields' })
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Please fill in all the fields' })
   }
 
   try {

@@ -24,7 +24,7 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.use('/api', protect, router)
-app.post('/signup', userValidation, signUp)
+app.post('/signup', signUp)
 app.post('/signin', signIn)
 
 export default app
