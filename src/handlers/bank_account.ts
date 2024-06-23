@@ -13,12 +13,12 @@ enum BANK_NAMES {
 
 interface BankAccountRequest extends Request {
   user?: {
-    id: string;
+    userId: string;
   };
   body: {
     bankName: BANK_NAMES;
     balance: string;
-    digits: number;
+    digits: string;
     name: string;
     color: string;
   };
@@ -28,7 +28,7 @@ interface BankAccountRequest extends Request {
 }
 
 export const getBankAccounts = async (req: BankAccountRequest, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
 
   if (!userId) {
     res.status(500).json({ message: "User does not exist" });
@@ -51,7 +51,7 @@ export const getBankAccounts = async (req: BankAccountRequest, res: Response) =>
 };
 
 export const getBankAccount = async (req: BankAccountRequest, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   const accountId = req.params.id;
 
   try {
@@ -73,7 +73,8 @@ export const getBankAccount = async (req: BankAccountRequest, res: Response) => 
 
 export const createBankAccount = async (req: BankAccountRequest, res: Response) => {
   const { bankName, balance, digits, name, color } = req.body;
-  const loggedInUserId = req.user?.id;
+  const loggedInUserId = req.user?.userId;
+  console.log(req.user)
   if (!loggedInUserId) {
     return res
       .status(400)
@@ -102,7 +103,7 @@ export const createBankAccount = async (req: BankAccountRequest, res: Response) 
 export const updateBankAccount = async (req: BankAccountRequest, res: Response) => {
   const { bankName, balance, digits, name, color } = req.body;
   const accountId = req.params.id;
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
 
   try {
     const account = await prisma.bank_Account.update({
@@ -130,7 +131,7 @@ export const updateBankAccount = async (req: BankAccountRequest, res: Response) 
 
 export const deleteBankAccount = async (req: BankAccountRequest, res: Response) => {
   const accountId = req.params.id;
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
 
   try {
     const account = await prisma.bank_Account.delete({
@@ -150,7 +151,7 @@ export const deleteBankAccount = async (req: BankAccountRequest, res: Response) 
 };
 
 export const totalBalance = async (req: BankAccountRequest, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   try {
     const accounts = await prisma.user.findUnique({
       where: {

@@ -10,13 +10,15 @@ interface CustomRequest extends Request {
     firstName: string
     lastName: string
     email: string
+    totalBalance: string
+    pocketTotalBalance: string
   }
 }
 
 export const signUp = async (req: CustomRequest, res: Response) => {
   // TODO: username is defined unique in schema so check what error that throws back
 
-  const { username, password, firstName, lastName, email } = req.body
+  const { username, password, firstName, lastName, email , totalBalance, pocketTotalBalance} = req.body
   if (!username && !password && !firstName && !lastName && !email) {
     return res.json({ message: 'Please fill in all the fields' })
   }
@@ -28,6 +30,8 @@ export const signUp = async (req: CustomRequest, res: Response) => {
         firstName: firstName,
         lastName: lastName,
         email: email,
+        totalBalance,
+        pocketTotalBalance,
       },
     })
     if (user) {
@@ -76,7 +80,7 @@ export const signIn = async (req: CustomRequest, res: Response) => {
     res.status(200).json({
       token,
       user: {
-        authorisedAccounts: [{ id: user.id }],
+        authorisedAccounts: [{ userId: user.id }],
       },
     })
   } catch (error: any) {

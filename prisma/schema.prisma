@@ -18,8 +18,8 @@ model User {
   lastName           String         @db.VarChar(30)
   email              String         @unique
   password           String
-  totalBalance       Int            @default(0)
-  pocketTotalBalance Int            @default(0)
+  totalBalance       String
+  pocketTotalBalance String
   Bank_Account       Bank_Account[]
   Pocket             Pocket[]
 }
@@ -39,7 +39,7 @@ model Bank_Account {
   updatedAt DateTime   @updatedAt
   bankName  BANK_NAMES
   balance   Decimal
-  digits    Int
+  digits    String
   name      String     @db.VarChar(55)
   color     String     @db.VarChar(30)
   userId    String
@@ -57,7 +57,7 @@ model Pocket {
   pocketTransactions PocketTransaction[]
   userId             String
   user               User                @relation(fields: [userId], references: [id])
-  target             target[] 
+  target             target?
   isMain             Boolean             @default(false)
 }
 
@@ -77,6 +77,6 @@ model target {
   updatedAt  DateTime @updatedAt
   target     Decimal
   targetDate DateTime
-  pocketId   String
+  pocketId   String @unique
   pocket     Pocket   @relation(fields: [pocketId], references: [id], onDelete: Cascade)
 }
