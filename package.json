@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/JackTubby/Pockets-Backend#readme",
   "dependencies": {
-    "@prisma/client": "^5.9.1",
+    "@prisma/client": "^5.15.1",
     "@types/node": "^20.11.16",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
