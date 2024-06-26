@@ -1,7 +1,7 @@
 import prisma from '../db'
 import { comparePassword, createJWT, hashPassword } from '../modules/auth'
 import { Request, Response } from 'express'
-import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken'
 
 interface CustomRequest extends Request {
   body: {
@@ -16,34 +16,29 @@ interface CustomRequest extends Request {
 }
 
 export const signUp = async (req: CustomRequest, res: Response) => {
-  // TODO: username is defined unique in schema so check what error that throws back
-
-  const { username, password, firstName, lastName, email , totalBalance, pocketTotalBalance} = req.body
-  if (!username && !password && !firstName && !lastName && !email) {
-    return res.json({ message: 'Please fill in all the fields' })
+  const { username, password, firstName, lastName, email, totalBalance, pocketTotalBalance } = req.body
+  if (!username || !password || !firstName || !lastName || !email) {
+    return res.status(400).json({ message: 'Please fill in all the fields' })
   }
   try {
+    const hashedPassword = await hashPassword(password)
     const user = await prisma.user.create({
       data: {
         username: username,
-        password: await hashPassword(password),
+        password: hashedPassword,
         firstName: firstName,
         lastName: lastName,
         email: email,
-        totalBalance,
-        pocketTotalBalance,
+        totalBalance: '0',
+        pocketTotalBalance: '0',
       },
     })
-    if (user) {
-      res.json({ message: 'User created please sign in!' })
-    } else {
-      return res.status(500).json({
-        message: 'Something went wrong! Please try again later..',
-      })
-    }
+    console.log(user)
+    res.status(201).json({ message: 'User created, please sign in!' })
   } catch (error: any) {
+    console.error('Error creating user:', error)
     if (error.code === 'P2002') {
-      return res.json({ message: 'That username already exists' })
+      return res.status(400).json({ message: 'That username already exists' })
     }
     return res.status(500).json({
       message: 'Something went wrong! Please try again later..',
