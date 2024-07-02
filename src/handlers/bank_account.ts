@@ -35,12 +35,9 @@ export const getBankAccounts = async (req: BankAccountRequest, res: Response) =>
   }
 
   try {
-    const accounts = await prisma.user.findUnique({
+    const accounts = await prisma.bank_Account.findMany({
       where: {
-        id: userId,
-      },
-      include: {
-        Bank_Account: true,
+        userId: userId,
       },
     });
     res.status(200).json(accounts);
