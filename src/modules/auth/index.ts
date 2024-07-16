@@ -13,7 +13,9 @@ export const createJWT = (user: any) => {
   if (!process.env.JWT_SECRET) {
     throw new Error('JWT_SECRET environment variable is not defined')
   }
-  const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET)
+  const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, {
+    expiresIn: '7d',
+  })
   // token is now a string
   return token
 }
@@ -28,10 +30,10 @@ export const protect = (req: any, res: any, next: any) => {
   }
 
   // we split on space as the user sends up "'Bearer' 'Token'"
-  const [type, token] = bearer.split(' ');
+  const [type, token] = bearer.split(' ')
 
   if (type !== 'Bearer' || !token) {
-    return res.status(401).json({ message: 'Not valid token' });
+    return res.status(401).json({ message: 'Not valid token' })
   }
 
   try {
