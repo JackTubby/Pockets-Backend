@@ -23,8 +23,8 @@ app.get('/', (req: Request, res: Response) => {
   res.status(200).json({ message: 'hello there!' })
 })
 
+app.post('/api/signup', signUp)
+app.post('/api/signin', signIn)
 app.use('/api', protect, router)
-app.post('/signup', signUp)
-app.post('/signin', signIn)
 
 export default app
