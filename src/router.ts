@@ -41,7 +41,7 @@ router.delete("/pocket/:id", deletePocket);
 /**
  * Total
  */
-router.get("/totalBalance", totalBalance);
-router.get("/pocketTotalBalance", pocketTotalBalance);
+router.get("/totalbalance", totalBalance);
+router.get("/pocketotalbalance", pocketTotalBalance);
 
 export default router;
