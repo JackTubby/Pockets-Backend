@@ -38,7 +38,7 @@ model Bank_Account {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   bankName  BANK_NAMES
-  balance   Decimal
+  balance   String
   digits    String
   name      String     @db.VarChar(55)
   color     String     @db.VarChar(30)
