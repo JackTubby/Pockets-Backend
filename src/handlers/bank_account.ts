@@ -148,7 +148,6 @@ export const deleteBankAccount = async (req: BankAccountRequest, res: Response) 
 
 export const totalBalance = async (req: BankAccountRequest, res: Response) => {
   const userId = req.user?.userId
-  console.log('TOTAL BALANCE FUNCTION RUN')
   if (!userId) {
     res.status(500).json({ message: 'User does not exist' })
   }
@@ -166,7 +165,8 @@ export const totalBalance = async (req: BankAccountRequest, res: Response) => {
     })
     // calculate total balance
     const calculateTotal = balanceConvertedNumbers.reduce((acc, item) => acc + item.balance, 0)
-    res.status(200).json({ total: calculateTotal })
+    const totalToString = calculateTotal.toString()
+    res.status(200).json({ total: totalToString })
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Failed to get bank Accounts' })
