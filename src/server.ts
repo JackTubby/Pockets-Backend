@@ -1,9 +1,6 @@
 import express, { Request, Response } from 'express';
 import morgan from 'morgan'
-import { signIn, signUp } from './handlers/user'
-import { userValidation } from './handlers/userValidation'
 import router from './router'
-import { protect } from './modules/auth'
 import cors from 'cors'
 
 const app = express()
@@ -23,8 +20,6 @@ app.get('/', (req: Request, res: Response) => {
   res.status(200).json({ message: 'hello there!' })
 })
 
-app.post('/api/signup', signUp)
-app.post('/api/signin', signIn)
-app.use('/api', protect, router)
+app.use('/api', router)
 
 export default app

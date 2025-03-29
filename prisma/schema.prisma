@@ -11,72 +11,48 @@ datasource db {
 }
 
 model User {
-  id                 String         @id @default(uuid())
-  createdAt          DateTime       @default(now())
-  username           String         @unique
-  firstName          String         @db.VarChar(30)
-  lastName           String         @db.VarChar(30)
-  email              String         @unique
-  password           String
-  totalBalance       String
-  pocketTotalBalance String
-  Bank_Account       Bank_Account[]
-  Pocket             Pocket[]
-}
-
-enum BANK_NAMES {
-  NATWEST
-  NATIONWIDE
-  HALIFAX
-  HSBC
-  SANTANDER
-  MONZO
-}
-
-model Bank_Account {
-  id        String     @id @default(uuid())
+  id        String     @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String     @unique
   createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  bankName  BANK_NAMES
-  balance   String
-  digits    String
-  name      String     @db.VarChar(55)
-  color     String     @db.VarChar(30)
-  userId    String
-  user      User       @relation(fields: [userId], references: [id])
+  incomes   Income[]
+  outgoings Outgoing[]
 }
 
-model Pocket {
-  id                 String              @id @default(uuid())
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  balance            Decimal
-  name               String              @db.VarChar(30)
-  color              String              @db.VarChar(30)
-  icon               String
-  pocketTransactions PocketTransaction[]
-  userId             String
-  user               User                @relation(fields: [userId], references: [id])
-  target             target?
-  isMain             Boolean             @default(false)
-}
-
-model PocketTransaction {
-  id              String   @id @default(uuid())
-  date            DateTime @default(now())
-  previousBalance Decimal
-  balanceAfter    Decimal
-  isDeposit       Boolean
-  pocketId        String
-  pocket          Pocket   @relation(fields: [pocketId], references: [id], onDelete: Cascade)
-}
-
-model target {
-  id         String   @id @default(uuid())
+model Income {
+  id         String   @id @default(cuid())
+  amount     Decimal  @default("0")
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  target     Decimal
-  targetDate DateTime
-  pocketId   String @unique
-  pocket     Pocket   @relation(fields: [pocketId], references: [id], onDelete: Cascade)
+  userId     String
+  categoryId String
+  notes      String?
+  expectedDate DateTime?
+  actualDate   DateTime?
+  user       User     @relation(fields: [userId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+}
+
+model Outgoing {
+  id         String   @id @default(cuid())
+  amount     Decimal  @default("0")
+  createdAt  DateTime @default(now())
+  userId     String
+  categoryId String
+  user       User     @relation(fields: [userId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id        String       @id @default(cuid())
+  name      String
+  type      CategoryType
+  createdAt DateTime     @default(now())
+  incomes   Income[]
+  outgoings Outgoing[]
+}
+
+enum CategoryType {
+  INCOME
+  OUTGOING
 }
