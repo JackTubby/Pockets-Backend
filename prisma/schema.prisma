@@ -18,29 +18,53 @@ model User {
   createdAt DateTime   @default(now())
   incomes   Income[]
   outgoings Outgoing[]
+  Saving    Saving[]
 }
 
 model Income {
-  id         String   @id @default(cuid())
-  amount     Decimal  @default("0")
-  createdAt  DateTime @default(now())
-  userId     String
-  categoryId String
-  notes      String?
+  id           String    @id @default(cuid())
+  amount       Decimal   @default("0")
+  createdAt    DateTime  @default(now())
+  userId       String
+  categoryId   String
+  notes        String?
   expectedDate DateTime?
   actualDate   DateTime?
-  user       User     @relation(fields: [userId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
+  category     Category  @relation(fields: [categoryId], references: [id])
 }
 
 model Outgoing {
-  id         String   @id @default(cuid())
-  amount     Decimal  @default("0")
-  createdAt  DateTime @default(now())
-  userId     String
-  categoryId String
-  user       User     @relation(fields: [userId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
+  id           String    @id @default(cuid())
+  amount       Decimal   @default("0")
+  actualAmount Decimal   @default("0")
+  createdAt    DateTime  @default(now())
+  userId       String
+  categoryId   String
+  name         String
+  completed    Boolean   @default(false)
+  notes        String?
+  expectedDate DateTime?
+  actualDate   DateTime?
+  user         User      @relation(fields: [userId], references: [id])
+  category     Category  @relation(fields: [categoryId], references: [id])
+}
+
+model Saving {
+  id             String    @id @default(cuid())
+  amount         Decimal   @default("0")
+  expectedAmount Decimal?  @default("0")
+  actualAmount   Decimal?  @default("0")
+  name           String
+  completed      Boolean   @default(false)
+  expectedDate   DateTime?
+  actualDate     DateTime?
+  categoryId     String
+  createdAt      DateTime  @default(now())
+  userId         String
+  notes          String?
+  user           User      @relation(fields: [userId], references: [id])
+  category       Category  @relation(fields: [categoryId], references: [id])
 }
 
 model Category {
@@ -50,6 +74,7 @@ model Category {
   createdAt DateTime     @default(now())
   incomes   Income[]
   outgoings Outgoing[]
+  Saving    Saving[]
 }
 
 enum CategoryType {
