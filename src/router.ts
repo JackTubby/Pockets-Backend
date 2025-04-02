@@ -1,21 +1,41 @@
+/**
+ * @description
+ * This file defines the routes for the application.
+ * It imports the necessary modules and defines the routes for user, income, outgoing, saving, and expenditure.
+ * Each route is associated with a handler function that processes the request and response.
+ * The router is then exported for use in the main application file.
+ */
+
 import { Router } from 'express'
-import { createUser } from './user/user.handler'
-import { createOneIncome, getOneIncome, getAllIncomes, updateOneIncome, deleteOneIncome } from './income/income.handler'
+import { createUser } from './routes/user/user.handler'
+import {
+  createOneIncome,
+  getOneIncome,
+  getAllIncomes,
+  updateOneIncome,
+  deleteOneIncome,
+} from './routes/income/income.handler'
 import {
   createOneOutgoing,
   getOneOutgoing,
   getAllOutgoings,
   updateOneOutgoing,
   deleteOneOutgoing,
-} from './outgoing/outgoing.handler'
-import { createOneSaving, getOneSaving, getAllSaving, updateOneSaving, deleteOneSaving } from './saving/saving.handler'
+} from './routes/outgoing/outgoing.handler'
+import {
+  createOneSaving,
+  getOneSaving,
+  getAllSaving,
+  updateOneSaving,
+  deleteOneSaving,
+} from './routes/saving/saving.handler'
 import {
   createOneExpenditure,
   getOneExpenditure,
   getAllExpenditures,
   updateOneExpenditure,
   deleteOneExpenditure,
-} from './expenditure/expenditure.handler'
+} from './routes/expenditure/expenditure.handler'
 
 const router = Router()
 
