@@ -29,3 +29,43 @@ After this you should now be able to use the API.
 - Run dev migrations - `npx prisma migrate dev`
 ## Resources
 ## Support
+
+## Directory Structure
+src/
+├── config/              # Application configuration
+│   └── index.ts         # Environment variables, constants, etc.
+│
+├── db/
+│   └── index.ts         # Prisma initialization (your current db.ts)
+│
+├── services/            # Business logic layer
+│   ├── userService.ts   # User-related business logic
+│   ├── productService.ts
+│   └── ... (other services)
+│
+├── utils/               # Generic utilities
+│   ├── dateUtils.ts
+│   ├── validationUtils.ts
+│   └── ... (other utilities)
+│
+├── helpers/             # Application-specific helpers
+│   ├── responseHelpers.ts  # Format API responses consistently
+│   └── ... (other helpers)
+│
+├── middleware/          # Express middleware
+│   ├── auth.ts          # Authentication middleware
+│   ├── errorHandler.ts  # Global error handling
+│   └── ... (other middleware)
+│
+├── routes/              # Keep your current route organization
+│   ├── users/
+│   │   ├── handlers.ts  # Slimmed down to call services
+│   │   └── routes.ts    # Route definitions (optional split)
+│   ├── products/
+│   │   ├── handlers.ts
+│   │   └── routes.ts
+│   └── ... (other route modules)
+│
+├── index.ts             # Entry point (unchanged)
+├── router.ts            # Main router that imports from routes/
+└── server.ts            # Server configuration (unchanged)

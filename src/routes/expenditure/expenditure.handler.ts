@@ -1,15 +1,15 @@
-import prisma from '../db'
+import prisma from '../db/index'
 import { Request, Response } from 'express'
 
-export const createOneOutgoing = async (req: Request, res: Response) => {
+export const createOneExpenditure = async (req: Request, res: Response) => {
   const userId = typeof req.query.userId === 'string' ? req.query.userId : undefined
-  const { amount, actualAmount, categoryId, name, completed, notes, expectedDate, actualDate } = req.body
+  const { amount, notes, categoryId, expectedDate, actualDate, actualAmount, name, completed } = req.body
   if (!amount || !userId)
     return res.status(400).json({
-      error: 'Missing required fields'
+      error: 'Missing required fields',
     })
   try {
-    const income = await prisma.outgoing.create({
+    const expenditure = await prisma.expenditure.create({
       data: {
         amount,
         actualAmount,
@@ -22,68 +22,71 @@ export const createOneOutgoing = async (req: Request, res: Response) => {
         actualDate,
       },
     })
-    res.json(income)
+    res.json(expenditure)
   } catch (error) {
     console.log(error)
     return res.status(500).json(error)
   }
 }
 
-export const getOneOutgoing = async (req: Request, res: Response) => {
+export const getOneExpenditure = async (req: Request, res: Response) => {
   const { id } = req.params
   try {
-    const outgoing = await prisma.outgoing.findUnique({
+    const expenditure = await prisma.expenditure.findUnique({
       where: { id: String(id) },
       include: { category: true },
     })
-    res.json(outgoing)
+    res.json(expenditure)
   } catch (error) {
     return res.status(500).json('Something went wrong')
   }
 }
 
-export const getAllOutgoings = async (req: Request, res: Response) => {
+export const getAllExpenditures = async (req: Request, res: Response) => {
   const userId = typeof req.query.userId === 'string' ? req.query.userId : undefined
   try {
-    const outgoings = await prisma.outgoing.findMany({
+    const expenditures = await prisma.expenditure.findMany({
       where: { userId },
       include: { category: true },
     })
-    res.json(outgoings)
+    res.json(expenditures)
   } catch (error) {
     return res.status(500).json('Something went wrong')
   }
 }
 
-export const updateOneOutgoing = async (req: Request, res: Response) => {
+export const updateOneExpenditure = async (req: Request, res: Response) => {
   const { id } = req.params
   const userId = typeof req.query.userId === 'string' ? req.query.userId : undefined
-  const { amount, actualAmount, categoryId, name, completed, notes, expectedDate, actualDate } = req.body
+  const { amount, notes, categoryId, expectedDate, actualDate, actualAmount, name, completed } = req.body
   try {
-    const outgoing = await prisma.outgoing.update({
+    const expenditure = await prisma.expenditure.update({
       where: { id: String(id) },
       data: {
         amount,
+        actualAmount,
         userId,
         categoryId,
+        name,
+        completed,
         notes,
         expectedDate,
         actualDate,
       },
     })
-    res.json(outgoing)
+    res.json(expenditure)
   } catch (error) {
-    return res.status(500).json(error)
+    return res.status(500).json('Something went wrong')
   }
 }
 
-export const deleteOneOutgoing = async (req: Request, res: Response) => {
+export const deleteOneExpenditure = async (req: Request, res: Response) => {
   const { id } = req.params
   try {
-    const outgoing = await prisma.outgoing.delete({
+    const expenditure = await prisma.expenditure.delete({
       where: { id: String(id) },
     })
-    res.json(outgoing)
+    res.json(expenditure)
   } catch (error) {
     return res.status(500).json('Something went wrong')
   }

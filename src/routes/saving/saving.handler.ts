@@ -1,4 +1,4 @@
-import prisma from '../db'
+import prisma from '../db/index'
 import e, { Request, Response } from 'express'
 
 export const createOneSaving = async (req: Request, res: Response) => {
