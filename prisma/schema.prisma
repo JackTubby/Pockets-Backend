@@ -98,4 +98,5 @@ model Category {
 enum CategoryType {
   INCOME
   OUTGOING
+  SAVING
 }
