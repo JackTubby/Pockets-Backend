@@ -1,23 +1,19 @@
 import prisma from '../../db/index'
 import { Request, Response } from 'express'
+import ValidationError from '../../errors/ValidationError'
 
 export const createOneSaving = async (req: Request, res: Response) => {
   const userId = typeof req.query.userId === 'string' ? req.query.userId : undefined
   const { amount, expectedAmount, actualAmount, name, completed, expectedDate, actualDate, categoryId, notes } =
     req.body
   if (!amount || !userId) {
+    const validationError = new ValidationError('Missing required fields', [
+      { field: 'amount', message: 'Amount is required' },
+      { field: 'userId', message: 'User ID is required' },
+    ])
     return res.status(400).json({
-      error: 'Missing required fields',
-      missingFields: {
-        amount: !amount,
-        userId: !userId,
-        expectedAmount: !expectedAmount,
-        actualAmount: !actualAmount,
-        name: !name,
-        completed: !completed,
-        expectedDate: !expectedDate,
-        actualDate: !actualDate,
-      },
+      message: validationError.message,
+      errors: validationError.errors,
     })
   }
   try {
