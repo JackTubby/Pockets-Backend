@@ -1,3 +1,8 @@
+/**
+ * ValidationError.ts
+ * Description: Custom error class for validation errors.
+ */
+
 import AppError from './AppError'
 
 interface ValidationErrorDetail {

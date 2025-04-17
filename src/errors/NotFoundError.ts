@@ -1,3 +1,8 @@
+/**
+ * NotFoundError.ts
+ * Description: Custom error class for not found errors.
+ */
+
 import AppError from './AppError'
 
 interface NotFoundErrorDetail {

@@ -1,3 +1,8 @@
+/**
+ * AuthorizationError.ts
+ * Description: Custom error class for authorization errors.
+ */
+
 import AppError from './AppError'
 
 interface DatabaseErrorDetail {

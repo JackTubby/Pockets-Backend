@@ -1,3 +1,8 @@
+/**
+ * DatabaseError.ts
+ * Description: Custom error class for database errors.
+ */
+
 import AppError from './AppError'
 
 interface DatabaseErrorDetail {

@@ -1,3 +1,10 @@
+/**
+ * AppError class
+ * Description: Custom error class for application errors.
+ * This class extends the built-in Error class and adds additional properties
+ * to handle application-specific errors.
+ */
+
 class AppError extends Error {
   public readonly name: string
   public readonly statusCode: number
