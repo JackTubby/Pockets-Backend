@@ -1,4 +1,4 @@
-import prisma from '../db/index'
+import prisma from '../../db/index'
 import { Request, Response } from 'express'
 
 export const createOneOutgoing = async (req: Request, res: Response) => {
