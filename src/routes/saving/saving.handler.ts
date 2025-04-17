@@ -1,14 +1,25 @@
 import prisma from '../../db/index'
-import e, { Request, Response } from 'express'
+import { Request, Response } from 'express'
 
 export const createOneSaving = async (req: Request, res: Response) => {
   const userId = typeof req.query.userId === 'string' ? req.query.userId : undefined
   const { amount, expectedAmount, actualAmount, name, completed, expectedDate, actualDate, categoryId, notes } =
     req.body
-  if (!amount || !userId)
+  if (!amount || !userId) {
     return res.status(400).json({
       error: 'Missing required fields',
+      missingFields: {
+        amount: !amount,
+        userId: !userId,
+        expectedAmount: !expectedAmount,
+        actualAmount: !actualAmount,
+        name: !name,
+        completed: !completed,
+        expectedDate: !expectedDate,
+        actualDate: !actualDate,
+      },
     })
+  }
   try {
     const saving = await prisma.saving.create({
       data: {
@@ -95,3 +106,8 @@ export const deleteOneSaving = async (req: Request, res: Response) => {
     return res.status(500).json('Something went wrong')
   }
 }
+
+/**
+ * TODO:
+ * - If categoryId is missing it will cause an error that a field is missing
+ */
