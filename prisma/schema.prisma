@@ -16,6 +16,7 @@ model User {
   lastName    String
   email       String        @unique
   createdAt   DateTime      @default(now())
+  summary     Summary[]
   incomes     Income[]
   outgoings   Outgoing[]
   Saving      Saving[]
@@ -99,4 +100,17 @@ enum CategoryType {
   INCOME
   OUTGOING
   SAVING
+}
+
+model Summary {
+  id            String  @id @default(cuid())
+  income        Decimal @default("0")
+  outgoing      Decimal @default("0")
+  expenditure   Decimal @default("0")
+  saving        Decimal @default("0")
+  totalOutgoing Decimal @default("0")
+  totalIncome   Decimal @default("0")
+  NetTotal      Decimal @default("0")
+  userId        String
+  User          User?   @relation(fields: [userId], references: [id])
 }
