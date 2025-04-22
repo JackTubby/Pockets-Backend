@@ -103,14 +103,15 @@ enum CategoryType {
 }
 
 model Summary {
-  id            String  @id @default(cuid())
-  income        Decimal @default("0")
-  outgoing      Decimal @default("0")
-  expenditure   Decimal @default("0")
-  saving        Decimal @default("0")
-  totalOutgoing Decimal @default("0")
-  totalIncome   Decimal @default("0")
-  NetTotal      Decimal @default("0")
-  userId        String
-  User          User?   @relation(fields: [userId], references: [id])
+  id          String   @id @default(cuid())
+  income      Decimal  @default("0")
+  outgoing    Decimal  @default("0")
+  expenditure Decimal  @default("0")
+  saving      Decimal  @default("0")
+  net         Decimal  @default("0")
+  startDate   DateTime
+  endDate     DateTime
+  createdAt   DateTime @default(now())
+  userId      String
+  User        User?    @relation(fields: [userId], references: [id])
 }
