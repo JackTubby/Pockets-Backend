@@ -36,6 +36,7 @@ import {
   updateOneExpenditure,
   deleteOneExpenditure,
 } from './routes/expenditure/expenditure.handler'
+import { summary } from './routes/summary/summary.handler'
 
 const router = Router()
 
@@ -79,5 +80,10 @@ router.get('/expenditure/:id', getOneExpenditure)
 router.get('/expenditure', getAllExpenditures)
 router.put('/expenditure/:id', updateOneExpenditure)
 router.delete('/expenditure/:id', deleteOneExpenditure)
+
+/**
+ * Summary
+ */
+router.get('/summary', summary)
 
 export default router
