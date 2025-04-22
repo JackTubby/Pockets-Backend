@@ -6,24 +6,52 @@
 
 import prisma from '../../db'
 
+
 export async function generateSummary(userId: string, dateFrom: string, dateTo: string) {
   try {
     // get information
-    const expenditures = await getExpenditureForUser(userId, dateFrom, dateTo)
-    const incomes = await getIncomeForUser(userId, dateFrom, dateTo)
-    const outgoings = await getOutgoingForUser(userId, dateFrom, dateTo)
-    const savings = await getSavingForUser(userId, dateFrom, dateTo)
-    console.log('explog: ', expenditures)
-    console.log('inclog', incomes)
-    console.log('outlog', outgoings)
-    console.log('savlog', savings)
-    // transform
-    // calculate
+    const [expenditures, incomes, outgoings, savings] = await Promise.all([
+      getExpenditureForUser(userId, dateFrom, dateTo),
+      getIncomeForUser(userId, dateFrom, dateTo),
+      getOutgoingForUser(userId, dateFrom, dateTo),
+      getSavingForUser(userId, dateFrom, dateTo),
+    ])
+    const totals = {
+      totalExpenditures: total(expenditures),
+      totalIncomes: total(incomes),
+      totalOutgoing: total(outgoings),
+      totalSavings: total(savings),
+    }
+    const netIncome = net(totals)
     // save to db
+    const dbRes = await prisma.summary.create({
+      data: {
+        userId: String(userId),
+        income: totals.totalIncomes,
+        outgoing: totals.totalIncomes,
+        expenditure: totals.totalExpenditures,
+        saving: totals.totalSavings,
+        net: netIncome,
+        startDate: dateFrom,
+        endDate: dateTo,
+      },
+    })
+    if (!dbRes) return false
+    return {
+      ...totals,
+      netIncome,
+    }
   } catch (error) {
     console.error('ERROR: ', error)
     return false
   }
+}
+
+function total(data: any): number {
+  return data.reduce((total: any, item: { amount: any }) => total + Number(item.amount), 0)
+}
+function net(data: any) {
+  return data.totalIncomes - (data.totalExpenditures + data.totalOutgoing)
 }
 
 async function getExpenditureForUser(userId: string, dateFrom: string, dateTo: string) {
@@ -32,13 +60,13 @@ async function getExpenditureForUser(userId: string, dateFrom: string, dateTo: s
     const response = await prisma.expenditure.findMany({
       where: {
         userId: String(userId),
-        expectedDate: {
+        actualDate: {
           gte: dateFrom,
           lte: dateTo,
         },
       },
       orderBy: {
-        expectedDate: 'asc',
+        actualDate: 'asc',
       },
     })
     if (!response.length) return false
@@ -54,13 +82,13 @@ async function getIncomeForUser(userId: string, dateFrom: string, dateTo: string
     const response = await prisma.income.findMany({
       where: {
         userId: String(userId),
-        expectedDate: {
+        actualDate: {
           gte: dateFrom,
           lte: dateTo,
         },
       },
       orderBy: {
-        expectedDate: 'asc',
+        actualDate: 'asc',
       },
     })
     if (!response.length) return false
@@ -76,13 +104,13 @@ async function getOutgoingForUser(userId: string, dateFrom: string, dateTo: stri
     const response = await prisma.outgoing.findMany({
       where: {
         userId: String(userId),
-        expectedDate: {
+        actualDate: {
           gte: dateFrom,
           lte: dateTo,
         },
       },
       orderBy: {
-        expectedDate: 'asc',
+        actualDate: 'asc',
       },
     })
     if (!response.length) return false
@@ -98,13 +126,13 @@ async function getSavingForUser(userId: string, dateFrom: string, dateTo: string
     const response = await prisma.saving.findMany({
       where: {
         userId: String(userId),
-        expectedDate: {
+        actualDate: {
           gte: dateFrom,
           lte: dateTo,
         },
       },
       orderBy: {
-        expectedDate: 'asc',
+        actualDate: 'asc',
       },
     })
     if (!response.length) return false
