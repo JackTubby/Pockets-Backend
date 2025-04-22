@@ -28,7 +28,6 @@ export async function generateSummary(
   dateTo: string
 ): Promise<SummaryResult | false> {
   try {
-    // get information
     const [expenditures, incomes, outgoings, savings] = await Promise.all([
       getExpenditureForUser(userId, dateFrom, dateTo),
       getIncomeForUser(userId, dateFrom, dateTo),
@@ -73,7 +72,6 @@ export async function generateSummary(
 
 function total(data: ExpenditureIncomeOutgoingSaving[]): number {
   return data.reduce((total, item) => {
-    // Handle both Decimal and number types
     const amount =
       typeof item.amount === 'object' && 'toNumber' in item.amount ? item.amount.toNumber() : Number(item.amount)
     return total + amount
@@ -110,8 +108,6 @@ async function getExpenditureForUser(
 
     if (!response.length) return false
 
-    // The response from Prisma is already in the correct shape
-    // TypeScript just needs help understanding that
     return response as unknown as ExpenditureIncomeOutgoingSaving[]
   } catch (error) {
     console.error('ERROR:', error)
