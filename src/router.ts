@@ -7,7 +7,7 @@
  */
 
 import { Router } from 'express'
-import { createUser } from './routes/user/user.handler'
+import { createUser, loginUser } from './routes/user/user.handler'
 import {
   createOneIncome,
   getOneIncome,
@@ -37,6 +37,15 @@ import {
   deleteOneExpenditure,
 } from './routes/expenditure/expenditure.handler'
 import { summary } from './routes/summary/summary.handler'
+import { createOneDebt, getOneDebt, getAllDebt, updateOneDebt, deleteOneDebt } from './routes/debt/debt.handler'
+import {
+  createOnePayment,
+  getOnePayment,
+  getAllPayment,
+  updateOnePayment,
+  deleteOnePayment,
+} from './routes/payment/payment.handler'
+import { authMiddleware } from './middleware/auth'
 
 const router = Router()
 
@@ -44,6 +53,9 @@ const router = Router()
  * USER
  */
 router.post('/user', createUser)
+router.post('/login', loginUser)
+
+router.use(authMiddleware)
 
 /**
  * INCOME
@@ -85,5 +97,20 @@ router.delete('/expenditure/:id', deleteOneExpenditure)
  * Summary
  */
 router.get('/summary', summary)
+
+/**
+ * Debt
+ */
+router.post('/debt', createOneDebt)
+router.get('/debt/:id', getOneDebt)
+router.get('/debt', getAllDebt)
+router.put('/debt/:id', updateOneDebt)
+router.delete('/debt/:id', deleteOneDebt)
+
+router.post('/payment', createOnePayment)
+router.get('/payment/:id', getOnePayment)
+router.get('/payment', getAllPayment)
+router.put('/payment/:id', updateOnePayment)
+router.delete('/payment/:id', deleteOnePayment)
 
 export default router

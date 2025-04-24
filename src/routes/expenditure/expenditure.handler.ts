@@ -2,7 +2,7 @@ import prisma from '../../db/index'
 import { Request, Response } from 'express'
 
 export const createOneExpenditure = async (req: Request, res: Response) => {
-  const userId = typeof req.query.userId === 'string' ? req.query.userId : undefined
+  const userId = req.user?.id
   const { amount, notes, categoryId, expectedDate, actualDate, actualAmount, name, completed } = req.body
   if (!amount || !userId)
     return res.status(400).json({
@@ -13,7 +13,7 @@ export const createOneExpenditure = async (req: Request, res: Response) => {
       data: {
         amount,
         actualAmount,
-        userId,
+        userId: String(userId),
         categoryId,
         name,
         completed,
@@ -31,9 +31,10 @@ export const createOneExpenditure = async (req: Request, res: Response) => {
 
 export const getOneExpenditure = async (req: Request, res: Response) => {
   const { id } = req.params
+  const userId = req.user?.id
   try {
     const expenditure = await prisma.expenditure.findUnique({
-      where: { id: String(id) },
+      where: { id: String(id), userId: String(userId) },
       include: { category: true },
     })
     res.json(expenditure)
@@ -43,10 +44,10 @@ export const getOneExpenditure = async (req: Request, res: Response) => {
 }
 
 export const getAllExpenditures = async (req: Request, res: Response) => {
-  const userId = typeof req.query.userId === 'string' ? req.query.userId : undefined
+  const userId = req.user?.id
   try {
     const expenditures = await prisma.expenditure.findMany({
-      where: { userId },
+      where: { userId: String(userId) },
       include: { category: true },
     })
     res.json(expenditures)
@@ -57,7 +58,7 @@ export const getAllExpenditures = async (req: Request, res: Response) => {
 
 export const updateOneExpenditure = async (req: Request, res: Response) => {
   const { id } = req.params
-  const userId = typeof req.query.userId === 'string' ? req.query.userId : undefined
+  const userId = req.user?.id
   const { amount, notes, categoryId, expectedDate, actualDate, actualAmount, name, completed } = req.body
   try {
     const expenditure = await prisma.expenditure.update({
@@ -65,7 +66,7 @@ export const updateOneExpenditure = async (req: Request, res: Response) => {
       data: {
         amount,
         actualAmount,
-        userId,
+        userId: String(userId),
         categoryId,
         name,
         completed,
@@ -82,9 +83,10 @@ export const updateOneExpenditure = async (req: Request, res: Response) => {
 
 export const deleteOneExpenditure = async (req: Request, res: Response) => {
   const { id } = req.params
+  const userId = req.user?.id
   try {
     const expenditure = await prisma.expenditure.delete({
-      where: { id: String(id) },
+      where: { id: String(id), userId: String(userId) },
     })
     res.json(expenditure)
   } catch (error) {

@@ -15,17 +15,20 @@ model User {
   firstName   String
   lastName    String
   email       String        @unique
+  password    String        @default("password")
   createdAt   DateTime      @default(now())
   summary     Summary[]
   incomes     Income[]
   outgoings   Outgoing[]
   Saving      Saving[]
   Expenditure Expenditure[]
+  Debt        Debt[]
+  Payment     Payment[]
 }
 
 model Income {
   id           String    @id @default(cuid())
-  amount       Decimal   @default("0")
+  amount       Decimal   @db.Decimal(10, 2)
   createdAt    DateTime  @default(now())
   userId       String
   categoryId   String
@@ -38,8 +41,8 @@ model Income {
 
 model Outgoing {
   id           String    @id @default(cuid())
-  amount       Decimal   @default("0")
-  actualAmount Decimal   @default("0")
+  amount       Decimal   @db.Decimal(10, 2)
+  actualAmount Decimal   @db.Decimal(10, 2)
   createdAt    DateTime  @default(now())
   userId       String
   categoryId   String
@@ -54,9 +57,9 @@ model Outgoing {
 
 model Saving {
   id             String    @id @default(cuid())
-  amount         Decimal   @default("0")
-  expectedAmount Decimal?  @default("0")
-  actualAmount   Decimal?  @default("0")
+  amount         Decimal   @db.Decimal(10, 2)
+  expectedAmount Decimal?  @db.Decimal(10, 2)
+  actualAmount   Decimal?  @db.Decimal(10, 2)
   name           String
   completed      Boolean   @default(false)
   expectedDate   DateTime?
@@ -71,8 +74,8 @@ model Saving {
 
 model Expenditure {
   id           String    @id @default(cuid())
-  amount       Decimal   @default("0")
-  actualAmount Decimal   @default("0")
+  amount       Decimal   @db.Decimal(10, 2)
+  actualAmount Decimal   @db.Decimal(10, 2)
   createdAt    DateTime  @default(now())
   userId       String
   categoryId   String
@@ -104,14 +107,39 @@ enum CategoryType {
 
 model Summary {
   id          String   @id @default(cuid())
-  income      Decimal  @default("0")
-  outgoing    Decimal  @default("0")
-  expenditure Decimal  @default("0")
-  saving      Decimal  @default("0")
-  net         Decimal  @default("0")
+  income      Decimal  @db.Decimal(10, 2)
+  outgoing    Decimal  @db.Decimal(10, 2)
+  expenditure Decimal  @db.Decimal(10, 2)
+  saving      Decimal  @db.Decimal(10, 2)
+  net         Decimal  @db.Decimal(10, 2)
   startDate   DateTime
   endDate     DateTime
   createdAt   DateTime @default(now())
   userId      String
+  User        User?    @relation(fields: [userId], references: [id])
+}
+
+model Debt {
+  id          String    @id @default(cuid())
+  description String
+  amount      Decimal   @db.Decimal(10, 2)
+  startDate   DateTime
+  dueDate     DateTime?
+  payments    Payment[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String
+  User        User?     @relation(fields: [userId], references: [id])
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  amount      Decimal  @db.Decimal(10, 2)
+  paymentDate DateTime @default(now())
+  debt        Debt     @relation(fields: [debtId], references: [id])
+  debtId      String
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   User        User?    @relation(fields: [userId], references: [id])
 }

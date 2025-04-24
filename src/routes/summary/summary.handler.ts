@@ -4,7 +4,7 @@ import { generateSummary } from '../../services/summary-service/summary.service'
 export async function summary(req: Request, res: Response) {
   try {
     const reqData = {
-      userId: req.query.userId as string,
+      userId: req.user?.id as string,
       dateFrom: req.query.dateFrom as string,
       dateTo: req.query.dateTo as string,
     }
