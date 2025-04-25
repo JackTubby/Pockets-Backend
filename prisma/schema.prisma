@@ -125,6 +125,9 @@ model Debt {
   amount      Decimal   @db.Decimal(10, 2)
   startDate   DateTime
   dueDate     DateTime?
+  status      String?
+  paid        Decimal?  @db.Decimal(10, 2)
+  remaining   Decimal?  @db.Decimal(10, 2)
   payments    Payment[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

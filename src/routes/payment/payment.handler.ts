@@ -1,9 +1,10 @@
 import prisma from '../../db/index'
 import { Request, Response } from 'express'
+import { subtract } from '../../services/debtSubtraction'
 
 export async function createOnePayment(req: Request, res: Response) {
   const { amount, paymentDate, debtId } = req.body
-  const userId = req.user?.id
+  const userId = String(req.user?.id)
   if (!amount || !paymentDate || !debtId)
     return res.status(400).json({
       error: 'Missing required fields',
@@ -15,10 +16,16 @@ export async function createOnePayment(req: Request, res: Response) {
         amount,
         paymentDate,
         debtId,
-        userId: String(userId),
+        userId: userId,
       },
     })
-    res.json(payment)
+    const subtraction = await subtract(debtId, userId)
+    if (subtraction.ok) {
+    }
+    res.json({
+      paymentData: payment,
+      subtraction,
+    })
   } catch (error) {
     return res.status(500).json(error)
   }
